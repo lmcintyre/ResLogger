@@ -40,7 +40,7 @@ namespace ResLogger
             configuration = pi.GetPluginConfig() as Configuration ?? new Configuration();
             configuration.Initialize(pi, this);
             ui = new PluginUI(configuration, this);
-
+            
             pi.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
 	            { HelpMessage = "Display the resource log."});
 
@@ -68,8 +68,9 @@ namespace ResLogger
         }
 
         public void Dispose() {
-
-            CloseLogStream();
+			
+            if (logStream != null)
+				CloseLogStream();
             WritePaths.Clear();
             Paths.Clear();
             WritePaths = null;
@@ -108,10 +109,10 @@ namespace ResLogger
         public void CloseLogStream() {
 			FlushLogStream();
             logStream.Close();
-            logStream = null;
         }
 
         public void FlushLogStream() {
+	        if (logStream == null) return;
 	        StringBuilder sb = new StringBuilder();
 	        foreach (string str in WritePaths.ToArray()) {
 		        sb.Append(str);
